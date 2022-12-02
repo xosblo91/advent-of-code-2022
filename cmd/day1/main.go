@@ -3,53 +3,50 @@ package day1
 import (
 	"bufio"
 	"os"
+	"sort"
 	"strconv"
 )
 
-func findTheBiggestChad(elves map[int]int) int {
-	biggestChadCarryWeight := 0
-	biggestChadIndex := 0
-	for i, calories := range elves {
-		if calories > biggestChadCarryWeight {
-			biggestChadCarryWeight = calories
-			biggestChadIndex = i
+type elves []int
+
+func (e elves) findTheBiggestChad() int {
+	biggestChad := 0
+
+	for _, elf := range e {
+		if elf > biggestChad {
+			biggestChad = elf
 		}
 	}
 
-	delete(elves, biggestChadIndex)
-	return biggestChadCarryWeight
+	return biggestChad
 }
 
-func findTheThreeBiggestChads(elves map[int]int) int {
-	sum := 0
-	for i := 0; i < 3; i++ {
-		sum += findTheBiggestChad(elves)
-	}
+func (e elves) findTheThreeBiggestChads() int {
+	sort.Slice(e, func(i, j int) bool {
+		return e[i] > e[j]
+	})
 
-	return sum
+	return e[0] + e[1] + e[2]
 }
 
-func readInput() (map[int]int, error) {
+func readInput() (elves, error) {
 	f, err := os.Open("input.txt")
 	if err != nil {
 		return nil, err
 	}
 
-	scanner := bufio.NewScanner(f)
-
-	elves := make(map[int]int)
-
-	counter := 0
+	elves := make(elves, 0)
 	sum := 0
+
+	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if scanner.Text() == "" {
-			elves[counter] = sum
+			elves = append(elves, sum)
 			sum = 0
 		} else {
 			calories, _ := strconv.Atoi(scanner.Text())
 			sum += calories
 		}
-		counter++
 	}
 
 	return elves, nil

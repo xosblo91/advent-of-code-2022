@@ -7,123 +7,68 @@ import (
 )
 
 const (
-	OpponentRock    = "A"
-	OpponentPaper   = "B"
-	OpponentScissor = "C"
+	win  = 6
+	draw = 3
 )
 
-const (
-	YouRock    = "X"
-	YouPaper   = "Y"
-	YouScissor = "Z"
-)
+var winConditions = map[string]string{
+	"A": "Y",
+	"B": "Z",
+	"C": "X",
+}
+
+var drawConditions = map[string]string{
+	"A": "X",
+	"B": "Y",
+	"C": "Z",
+}
+
+var lossConditions = map[string]string{
+	"A": "Z",
+	"B": "X",
+	"C": "Y",
+}
 
 type game struct {
 	Opponent string
-	You      string
+	Me       string
 }
 
-func (g game) Play() int {
-	if g.Opponent == OpponentRock {
-		return g.OpponentPlaysRock()
-	} else if g.Opponent == OpponentPaper {
-		return g.OpponentPlaysPaper()
-	} else {
-		return g.OpponentPlaysScissor()
-	}
-}
-
-func (g game) OpponentPlaysRock() int {
-	if g.You == YouRock {
-		return 4
-	}
-	if g.You == YouPaper {
-		return 8
+func score(move string) int {
+	if move == "X" {
+		return 1
+	} else if move == "Y" {
+		return 2
 	}
 
 	return 3
 }
 
-func (g game) OpponentPlaysPaper() int {
-	if g.You == YouRock {
-		return 1
-	}
-	if g.You == YouPaper {
-		return 5
-	}
-
-	return 9
-}
-
-func (g game) OpponentPlaysScissor() int {
-	if g.You == YouRock {
-		return 7
-	}
-	if g.You == YouPaper {
-		return 2
-	}
-
-	return 6
-}
-
-func (g game) Play2() int {
-	if g.Opponent == OpponentRock {
-		return g.OpponentPlaysRock2()
-	} else if g.Opponent == OpponentPaper {
-		return g.OpponentPlaysPaper2()
-	} else {
-		return g.OpponentPlaysScissor2()
-	}
-}
-
-func (g game) OpponentPlaysRock2() int {
-	if g.You == "X" {
-		return 3
-	}
-	if g.You == "Y" {
-		return 4
-	}
-
-	return 8
-}
-
-func (g game) OpponentPlaysPaper2() int {
-	if g.You == "X" {
-		return 1
-	}
-	if g.You == "Y" {
-		return 5
-	}
-
-	return 9
-}
-
-func (g game) OpponentPlaysScissor2() int {
-	if g.You == "X" {
-		return 2
-	}
-	if g.You == "Y" {
-		return 6
-	}
-
-	return 7
-}
-
-func sumScore(games []game) int {
-	sum := 0
-
+func play(games []game) int {
+	var sum int
 	for _, game := range games {
-		sum += game.Play()
+		if winningMove := winConditions[game.Opponent]; winningMove == game.Me {
+			sum += win
+		} else if drawMove := drawConditions[game.Opponent]; drawMove == game.Me {
+			sum += draw
+		}
+
+		sum += score(game.Me)
 	}
 
 	return sum
 }
 
-func sumScore2(games []game) int {
-	sum := 0
-
+func play2(games []game) int {
+	var sum int
 	for _, game := range games {
-		sum += game.Play2()
+		if game.Me == "Z" {
+			sum += win + score(winConditions[game.Opponent])
+		} else if game.Me == "Y" {
+			sum += draw + score(drawConditions[game.Opponent])
+		} else {
+			sum += score(lossConditions[game.Opponent])
+		}
 	}
 
 	return sum
@@ -135,15 +80,14 @@ func readInput() ([]game, error) {
 		return nil, err
 	}
 
-	scanner := bufio.NewScanner(f)
-
 	games := make([]game, 0)
 
+	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		split := strings.Split(scanner.Text(), " ")
 		games = append(games, game{
 			Opponent: split[0],
-			You:      split[1],
+			Me:       split[1],
 		})
 	}
 
