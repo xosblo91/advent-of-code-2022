@@ -1,4 +1,4 @@
-package day1
+package main
 
 import (
 	"github.com/stretchr/testify/require"
