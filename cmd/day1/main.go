@@ -43,10 +43,15 @@ func readInput() (elves, error) {
 		if scanner.Text() == "" {
 			elves = append(elves, sum)
 			sum = 0
-		} else {
-			calories, _ := strconv.Atoi(scanner.Text())
-			sum += calories
+			continue
 		}
+
+		calories, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			return nil, err
+		}
+
+		sum += calories
 	}
 
 	return elves, nil
