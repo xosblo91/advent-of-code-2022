@@ -43,18 +43,15 @@ func part2(pairs []cleaningPair) int {
 	return overlap
 }
 
-func parse(input string) (cleaningPair, error) {
+func parse(input string) cleaningPair {
 	split := strings.FieldsFunc(input, func(c rune) bool {
 		return c == ',' || c == '-'
 	})
 
-	elf1Lower, err := strconv.Atoi(split[0])
-	elf1Upper, err := strconv.Atoi(split[1])
-	elf2Lower, err := strconv.Atoi(split[2])
-	elf2Upper, err := strconv.Atoi(split[3])
-	if err != nil {
-		return cleaningPair{}, err
-	}
+	elf1Lower, _ := strconv.Atoi(split[0])
+	elf1Upper, _ := strconv.Atoi(split[1])
+	elf2Lower, _ := strconv.Atoi(split[2])
+	elf2Upper, _ := strconv.Atoi(split[3])
 
 	return cleaningPair{
 		Elf1: elf{
@@ -65,7 +62,7 @@ func parse(input string) (cleaningPair, error) {
 			Lower: elf2Lower,
 			Upper: elf2Upper,
 		},
-	}, nil
+	}
 }
 
 func readInput() ([]cleaningPair, error) {
@@ -78,12 +75,7 @@ func readInput() ([]cleaningPair, error) {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		pair, err := parse(scanner.Text())
-		if err != nil {
-			return nil, err
-		}
-
-		pairs = append(pairs, pair)
+		pairs = append(pairs, parse(scanner.Text()))
 	}
 
 	return pairs, nil
