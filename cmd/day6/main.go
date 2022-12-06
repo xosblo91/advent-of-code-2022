@@ -7,14 +7,15 @@ import (
 )
 
 func part1(n int, characters []byte) int {
-	count := 0
-	for i := n - 1; i < len(characters); i++ {
-		sequence := characters[i-n+1 : n+count]
+	for i := range characters {
+		if i < n-1 {
+			continue
+		}
+
+		sequence := characters[i-n+1 : i+1]
 		if pie.AreUnique(sequence) {
 			return i + 1
 		}
-
-		count++
 	}
 
 	return 0
